@@ -55,9 +55,11 @@ if my_pid != SERVER_ID:
     np_votes = np.load(f'DATA/{DATASET}/votes_client_{my_pid}.npy')
     # Compute my local sigma1 and sigma2, a local parts of the total
     # variance respecitively SIGMA1 and SIGMA2
+    print('my votes (1st sample):', np_votes[0])
     nb_teachers = int(sum(np_votes[0]))
     sigma1 = float( np.sqrt(float(nb_teachers)/float(TOTAL_NB_TEACHERS)) * SIGMA1 )
     sigma2 = float( np.sqrt(float(nb_teachers)/float(TOTAL_NB_TEACHERS)) * SIGMA2 )
+    print('my noisy votes (e.g.):', list( map(float, np.array(my_votes) + np.random.normal(0, sigma2, NB_CLASSES)) ))
 
 
 ###############################################################################
@@ -91,8 +93,8 @@ for sample_id in range(NB_SAMPLES):
     if not IS_SERVER:
         # Generate two different noise values (from the same distribution)
         # Each party will end up using one of the two in an oblivious manner
-        noise0 = float(np.random.normal(0,SIGMA1))
-        noise1 = float(np.random.normal(0,SIGMA1))
+        noise0 = float(np.random.normal(0, sigma1))
+        noise1 = float(np.random.normal(0, sigma1))
         #print('noise0:', noise0)
         #print('noise1:', noise1)
 
@@ -154,7 +156,7 @@ for sample_id in range(NB_SAMPLES):
     else:
         if not IS_SERVER:
             # Generate the vector of gaussian noise values
-            noise_vector = np.random.normal(0, SIGMA2, NB_CLASSES)
+            noise_vector = np.random.normal(0, sigma2, NB_CLASSES)
     
             # Add it to the votes to noise them
             noisy_votes = list(map(float, np.array(my_votes) + noise_vector))
