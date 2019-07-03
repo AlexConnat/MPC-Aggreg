@@ -13,7 +13,7 @@ IS_SERVER = False
 
 if DATASET == 'mnist250':
     #NB_SAMPLES = 10000
-    NB_SAMPLES = 20
+    NB_SAMPLES = 640
     NB_CLASSES = 10
     THRESHOLD = 200
     SIGMA1 = 150
