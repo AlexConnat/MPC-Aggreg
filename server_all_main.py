@@ -12,17 +12,24 @@ TOTAL_NB_TEACHERS = 250
 IS_SERVER = False
 
 if DATASET == 'mnist250':
-    NB_SAMPLES = 10000
+    #NB_SAMPLES = 10000
+    NB_SAMPLES = 20
     NB_CLASSES = 10
     THRESHOLD = 200
     SIGMA1 = 150
     SIGMA2 = 40
 elif DATASET == 'svhn250':
-    NB_SAMPLES = 26032
+    #NB_SAMPLES = 26032
+    NB_SAMPLES = 8500
     NB_CLASSES = 10
     THRESHOLD = 300
     SIGMA1 = 200
     SIGMA2 = 40
+
+
+# Will hold the computed labels (or -1 if label is not defined)
+# -- 8-bit integers type for storage efficiency --
+LABELS = np.zeros(NB_SAMPLES, dtype=np.int8) # 8-bit integers for storage efficiency
 
 
 # Secure type for integers, and for fixed precision numbers
@@ -138,6 +145,7 @@ for sample_id in range(NB_SAMPLES):
     if noisy_max < THRESHOLD:
         if IS_SERVER:
             print(f'[*] Sample {sample_id}: NULL')
+            LABELS[sample_id] = -1
         continue # Skip to the next sample_id in the for loop
 
     # If it is greater than the threshold (meaning that the teachers are
@@ -172,8 +180,22 @@ for sample_id in range(NB_SAMPLES):
         
         if IS_SERVER:
             print(f'[*] Sample {sample_id}: {label}')
+            LABELS[sample_id] = label
         
         continue # To the next sample_id
+
+
+if IS_SERVER:
+    # At the end of the computation, store these labels to a .npy file
+    # Also store the computation time in the filename
+    
+    #from datetime import datetime
+    #ts = int(datetime.timestamp(datetime.now()))
+    import time
+    elapsed = time.time() - mpc.start_time
+
+    np.save(f'./RESULTS/labels_mnist250_{M-1}_clients_{elapsed}.npy', LABELS)
+
 
 ###############################################################################
 print('\n'+'='*50)
