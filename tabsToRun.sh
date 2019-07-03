@@ -15,5 +15,5 @@ done
 # important to run the server at LAST, because he's the one measuring the
 # computation time:
 cmd="python3 server_all_main.py $repeat_params -I 0"
-gnome-terminal --tab -t "Server" -- bash -c "$cmd"
+gnome-terminal --tab -t "Server" -- bash -c "$cmd; exec bash" # The server's terminal will stay open
 
