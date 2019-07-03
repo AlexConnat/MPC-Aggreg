@@ -18,7 +18,7 @@ my_pid = mpc.pid
 print('my pid:', my_pid)
 
 # Load the votes from .npy file
-np_votes = np.load(f'DATA/mnist250/votes_client_{my_pid}.npy')
+np_votes = np.load(f'DATA/mnist250/votes_client_{my_pid+1}.npy')
 
 # Derive these parameters from file
 NB_SAMPLES = len(np_votes)
@@ -108,7 +108,7 @@ for sample_id in range(NB_SAMPLES):
     # of each party, and take the argmax of this aggregated array as our label
     else:
         # Generate the vector of gaussian noise values
-        noise_vector = np.random.normal(0, SIGMA2, NB_CLASSES)
+        noise_vector = np.random.normal(0, SIGMA2, NB_CLASSES) # TODO: Actually TWO different noise_vectors (oblivious)
     
         # Add it to the votes to noise them
         noisy_votes = list(map(float, np.array(my_votes) + noise_vector))
