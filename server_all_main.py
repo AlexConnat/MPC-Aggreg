@@ -2,12 +2,24 @@
 
 from mpyc.runtime import mpc
 import numpy as np
+import sys
 
 from utils import vector_add_all, scalar_add_all, argmax
 
+if len(sys.argv) != 2:
+    print(f'Usage: {sys.argv[0]} <mnist|svhn> [...]')
+    sys.exit()
+
+if sys.argv[1] == 'mnist':
+    DATASET = 'mnist250'
+elif sys.argv[1] == 'svhn':
+    DATASET = 'svhn250'
+else:
+    print('Error: Should only specify "mnist" or "svhn" as datasets')
+    print('Received:', sys.argv[1])
+    sys.exit()
 
 SERVER_ID = 0
-DATASET = 'mnist250'
 TOTAL_NB_TEACHERS = 250
 IS_SERVER = False
 
@@ -215,7 +227,7 @@ if IS_SERVER:
     import time
     elapsed = time.time() - mpc.start_time
 
-    np.save(f'./RESULTS/labels_mnist250_{M-1}_clients_{elapsed}.npy', LABELS)
+    np.save(f'./RESULTS/labels_{DATASET}_{M-1}_clients_{elapsed}.npy', LABELS)
 
 
 ###############################################################################
