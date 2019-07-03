@@ -19,7 +19,7 @@ my_pid = mpc.pid
 print('my pid:', my_pid)
 
 # Load the votes from .npy file
-np_votes = np.load(f'svhn250/votes_client_{my_pid}.npy')
+np_votes = np.load(f'DATA/svhn250/votes_client_{my_pid}.npy')
 
 # Derive these parameters from file
 NB_SAMPLES = len(np_votes)
@@ -27,6 +27,7 @@ NB_CLASSES = len(np_votes[0])
 nb_teachers = int(sum(np_votes[0]))
 
 # Some useful constants
+# TODO: SHOULD DEPEND ON THE TOTAL NUMBER OF TEACHERS
 SIGMA1 = 200
 SIGMA2 = 40     
 THRESHOLD = 300 
