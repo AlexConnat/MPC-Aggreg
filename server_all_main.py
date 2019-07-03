@@ -59,7 +59,7 @@ if my_pid != SERVER_ID:
     nb_teachers = int(sum(np_votes[0]))
     sigma1 = float( np.sqrt(float(nb_teachers)/float(TOTAL_NB_TEACHERS)) * SIGMA1 )
     sigma2 = float( np.sqrt(float(nb_teachers)/float(TOTAL_NB_TEACHERS)) * SIGMA2 )
-    print('my noisy votes (e.g.):', list( map(float, np.array(my_votes) + np.random.normal(0, sigma2, NB_CLASSES)) ))
+    print('my noisy votes (e.g.):', list( map(float, np_votes[0] + np.random.normal(0, sigma2, NB_CLASSES)) ))
 
 
 ###############################################################################
@@ -155,26 +155,45 @@ for sample_id in range(NB_SAMPLES):
     # of each party, and take the argmax of this aggregated array as our label
     else:
         if not IS_SERVER:
-            # Generate the vector of gaussian noise values
-            noise_vector = np.random.normal(0, sigma2, NB_CLASSES)
-    
-            # Add it to the votes to noise them
-            noisy_votes = list(map(float, np.array(my_votes) + noise_vector))
-
-            # Convert them to secure type
-            sec_noisy_votes = list(map(secfxp, noisy_votes))
+            # Generate two vectors of gaussian noise values
+            # Again, which noise vector would be used is oblivious to the clients
+            noise_vector0 = list(map(float, np.random.normal(0, sigma2, NB_CLASSES)))
+            noise_vector1 = list(map(float, np.random.normal(0, sigma2, NB_CLASSES)))
+            
+            # Convert them both to secure type
+            sec_noise_vector0 = list(map(secfxp, noise_vector0))
+            sec_noise_vector1 = list(map(secfxp, noise_vector1))
         
         else:
-            # The server does not have input votes
-            sec_noisy_votes = list(map(secfxp, [None]*NB_CLASSES))
+            # The server does not generate noise vectors
+            sec_noise_vector0 = list(map(secfxp, [None]*NB_CLASSES))
+            sec_noise_vector1 = list(map(secfxp, [None]*NB_CLASSES))
+        
+        
+        # Secret-share both noise vectors with every other party
+        all_sec_noise_vector0 = mpc.input(sec_noise_vector0, senders=list(range(1,M)))
+        all_sec_noise_vector1 = mpc.input(sec_noise_vector1, senders=list(range(1,M)))
 
-        # Secret-share them with every party
-        all_sec_noisy_votes = mpc.input(sec_noisy_votes, senders=list(range(1,M)))
+        sec_chosen_noise_vectors = []
+        for client_id, selection_bit_for_client in enumerate(sec_selection_bits): 
+            # If b is 0, we select noise0 from this client
+            # If b is 0, we select noise1 from this client 
+            # FIXME: Condition must be integral!
+            #sec_chosen_noise_vector = mpc.if_else(selection_bit_for_client, all_sec_noise_vector1[client_id], all_sec_noise_vector0[client_id])
+            #sec_chosen_noise_vectors.append(sec_chosen_noise_vector)
+            sec_chosen_noise_vectors.append(all_sec_noise_vector1[client_id])
 
-        # Aggregate all these noisy votes from every party
-        total_sec_noisy_votes = vector_add_all(all_sec_noisy_votes)
+        #print('chosen noise vectors:', mpc.run(mpc.output(sec_chosen_noise_vectors)))
 
-        # Compute the secure argmax on this aggregated vector
+
+        # Aggregate the secure noise vectors from all parties 
+        total_sec_noise = vector_add_all(sec_chosen_noise_vectors)
+        #print('total noise vector:', mpc.run(mpc.output(total_sec_noise)))
+
+        # Add this secure total noise vector to the secure total votes vector
+        total_sec_noisy_votes = mpc.vector_add(total_sec_votes, total_sec_noise)
+
+        # Compute the secure argmax on this vector of aggregated noisy votes
         sec_argmax = argmax(total_sec_noisy_votes)
     
         # Our label is the revealed (=recombined) argmax
@@ -201,7 +220,7 @@ if IS_SERVER:
 
 ###############################################################################
 print('\n'+'='*50)
-mpc.run(mpc.shutdown())
+mpc.run(mpc.shutdown())    #### END THE MPC ROUNDS OF COMPUTATION ####
 print('='*50)
 ###############################################################################
 
