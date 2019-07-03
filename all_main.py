@@ -77,15 +77,11 @@ for sample_id in range(NB_SAMPLES):
     all_sec_noises0 = mpc.input(sec_noise0)
     all_sec_noises1 = mpc.input(sec_noise1)
 
-
-    ###################################################################################
-    # TODO: Server side maaaaagic!
     # Generate a random selection bit
-    b = mpc.random_bit(secfxp)# FIXME: Will be the SAME random bit for every party
+    b = mpc.random_bit(secfxp)# FIXME: Will be the SAME random bit for every party (want a DIFFERENT one)
 
     # This will choose to keep noise0 or noise1 depending on the value of b
     # b is not known by the party, this is an hence an oblivious choice
-    # TODO: Server should choose which to take from all_sec_noises0 and which to take from all_sec_noises1
     chosen_sec_noises = mpc.if_else(b, all_sec_noises1, all_sec_noises0)
     ###################################################################################
 
