@@ -4,4 +4,4 @@ then
     exit
 fi
 
-gnome-terminal --window -- ./myTabs.sh $1
+gnome-terminal --window -- ./tabsToRun.sh $1
