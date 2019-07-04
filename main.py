@@ -6,6 +6,12 @@ import sys
 
 from utils import vector_add_all, scalar_add_all, argmax
 
+
+# import csv
+# csv_file = open(f'SVHN_PRECISION.csv', mode='w')
+# csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
+
 if len(sys.argv) != 2:
     print(f'Usage: {sys.argv[0]} <mnist|svhn> [...]')
     sys.exit()
@@ -24,15 +30,15 @@ TOTAL_NB_TEACHERS = 250
 IS_SERVER = False
 
 if DATASET == 'mnist250':
-    NB_SAMPLES = 10000
-    #NB_SAMPLES = 640
+    #NB_SAMPLES = 10000
+    NB_SAMPLES = 640
     NB_CLASSES = 10
     THRESHOLD = 200
     SIGMA1 = 150
     SIGMA2 = 40
 elif DATASET == 'svhn250':
-    NB_SAMPLES = 26032
-    #NB_SAMPLES = 8500
+    #NB_SAMPLES = 26032
+    NB_SAMPLES = 8500
     NB_CLASSES = 10
     THRESHOLD = 300
     SIGMA1 = 200
@@ -107,8 +113,6 @@ for sample_id in range(NB_SAMPLES):
         # Each party will end up using one of the two in an oblivious manner
         noise0 = float(np.random.normal(0, sigma1))
         noise1 = float(np.random.normal(0, sigma1))
-        print('noise0:', noise0)
-        print('noise1:', noise1)
 
         # Convert them to secure type
         sec_noise0, sec_noise1 = secfxp(noise0), secfxp(noise1)
@@ -121,19 +125,16 @@ for sample_id in range(NB_SAMPLES):
     all_sec_noises0 = mpc.input(sec_noise0, senders=list(range(1,M)))
     all_sec_noises1 = mpc.input(sec_noise1, senders=list(range(1,M)))
 
-    # ### DEBUG ### convert them back to float
-    conv_noises0 = mpc.run(mpc.output(all_sec_noises0))
-    conv_noises1 = mpc.run(mpc.output(all_sec_noises1))
-
-    if not IS_SERVER:
-        conv_noise0 = float(conv_noises0[my_pid-1])
-        conv_noise1 = float(conv_noises1[my_pid-1])
-        print(noise0, conv_noise0, noise0 - conv_noise0)
-        import csv
-        with open(f'SVHN_PRECISION_{my_pid}.csv', mode='w') as csv_file:
-            csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-            csv_writer.writerow([noise0, conv_noise0, noise0-conv_noise0])
-            csv_writer.writerow([noise1, conv_noise1, noise1-conv_noise1])
+    # # ### DEBUG ### convert them back to float
+    # conv_noises0 = mpc.run(mpc.output(all_sec_noises0))
+    # conv_noises1 = mpc.run(mpc.output(all_sec_noises1))
+    #
+    # if not IS_SERVER:
+    #     conv_noise0 = float(conv_noises0[my_pid-1])
+    #     conv_noise1 = float(conv_noises1[my_pid-1])
+    #     print(noise0, conv_noise0, noise0 - conv_noise0)
+    #     csv_writer.writerow([noise0, conv_noise0, noise0-conv_noise0])
+    #     csv_writer.writerow([noise1, conv_noise1, noise1-conv_noise1])
 
     if IS_SERVER:
         # Generate a selection bit for every client
