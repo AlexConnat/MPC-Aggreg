@@ -24,15 +24,15 @@ TOTAL_NB_TEACHERS = 250
 IS_SERVER = False
 
 if DATASET == 'mnist250':
-    #NB_SAMPLES = 10000
-    NB_SAMPLES = 640
+    NB_SAMPLES = 10000
+    #NB_SAMPLES = 640
     NB_CLASSES = 10
     THRESHOLD = 200
     SIGMA1 = 150
     SIGMA2 = 40
 elif DATASET == 'svhn250':
-    #NB_SAMPLES = 26032
-    NB_SAMPLES = 8500
+    NB_SAMPLES = 26032
+    #NB_SAMPLES = 8500
     NB_CLASSES = 10
     THRESHOLD = 300
     SIGMA1 = 200
@@ -77,14 +77,14 @@ if my_pid != SERVER_ID:
 ###############################################################################
 print('\n' + "="*50)
 mpc.run(mpc.start())   #### START THE MPC ROUNDS OF COMPUTATION ####
-print("="*50,'\n'); 
+print("="*50,'\n');
 ###############################################################################
 
 
 
 # Iterate over all samples in the public dataset
 for sample_id in range(NB_SAMPLES):
-   
+
     if not IS_SERVER:
         # Take the sample_id°th votes of the list
         my_votes = list(map(int, np_votes[sample_id]))
@@ -95,7 +95,7 @@ for sample_id in range(NB_SAMPLES):
         # Server is not an input party (it has no votes)
         my_sec_votes = list(map(secfxp, [None]*NB_CLASSES))
 
-    # Secret-share the votes from this party with every other party 
+    # Secret-share the votes from this party with every other party
     all_sec_votes = mpc.input(my_sec_votes, senders=list(range(1,M)))
 
     # Aggregate the secure votes from all parties
@@ -107,11 +107,12 @@ for sample_id in range(NB_SAMPLES):
         # Each party will end up using one of the two in an oblivious manner
         noise0 = float(np.random.normal(0, sigma1))
         noise1 = float(np.random.normal(0, sigma1))
-        #print('noise0:', noise0)
-        #print('noise1:', noise1)
+        print('noise0:', noise0)
+        print('noise1:', noise1)
 
         # Convert them to secure type
         sec_noise0, sec_noise1 = secfxp(noise0), secfxp(noise1)
+
     else:
         # The server does not generate noise values
         sec_noise0, sec_noise1 = secfxp(None), secfxp(None)
@@ -120,6 +121,20 @@ for sample_id in range(NB_SAMPLES):
     all_sec_noises0 = mpc.input(sec_noise0, senders=list(range(1,M)))
     all_sec_noises1 = mpc.input(sec_noise1, senders=list(range(1,M)))
 
+    # ### DEBUG ### convert them back to float
+    conv_noises0 = mpc.run(mpc.output(all_sec_noises0))
+    conv_noises1 = mpc.run(mpc.output(all_sec_noises1))
+
+    if not IS_SERVER:
+        conv_noise0 = float(conv_noises0[my_pid-1])
+        conv_noise1 = float(conv_noises1[my_pid-1])
+        print(noise0, conv_noise0, noise0 - conv_noise0)
+        import csv
+        with open(f'SVHN_PRECISION_{my_pid}.csv', mode='w') as csv_file:
+            csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            csv_writer.writerow([noise0, conv_noise0, noise0-conv_noise0])
+            csv_writer.writerow([noise1, conv_noise1, noise1-conv_noise1])
+
     if IS_SERVER:
         # Generate a selection bit for every client
         selection_bits = list(map(int, np.random.randint(0,2,M-1)))
@@ -127,21 +142,21 @@ for sample_id in range(NB_SAMPLES):
     else:
         # Only the server draw these random selection bits
         sec_selection_bits = list(map(secfxp, [None]*(M-1)))
-    
+
     sec_selection_bits = mpc.input(sec_selection_bits, senders=[SERVER_ID])[0] # Only one sender  -->  Only one element (list) in the list
     #print('selection bits:', mpc.run(mpc.output(sec_selection_bits)))
 
     sec_chosen_noises = []
-    for client_id, selection_bit_for_client in enumerate(sec_selection_bits): 
+    for client_id, selection_bit_for_client in enumerate(sec_selection_bits):
         # If b is 0, we select noise0 from this client
-        # If b is 0, we select noise1 from this client 
-        sec_chosen_noise = mpc.if_else(selection_bit_for_client, 
+        # If b is 0, we select noise1 from this client
+        sec_chosen_noise = mpc.if_else(selection_bit_for_client,
                         all_sec_noises1[client_id], all_sec_noises0[client_id])
         sec_chosen_noises.append(sec_chosen_noise)
 
     #print('chosen noises:', mpc.run(mpc.output(sec_chosen_noises)))
 
-    # Aggregate the secure noise values from all parties 
+    # Aggregate the secure noise values from all parties
     total_sec_noise = scalar_add_all(sec_chosen_noises)
     #print('total noise:', mpc.run(mpc.output(total_sec_noise)))
 
@@ -151,7 +166,7 @@ for sample_id in range(NB_SAMPLES):
     # Add the aggregated noise to this max value
     noisy_sec_max = sec_max + total_sec_noise
 
-    # Reveal (=recombine the shares) of this noisy maximum 
+    # Reveal (=recombine the shares) of this noisy maximum
     noisy_max = float(mpc.run(mpc.output(noisy_sec_max))) # TODO: only server receives?
 
     # If it is lower than a threshold, the teachers are not confident enough
@@ -171,25 +186,25 @@ for sample_id in range(NB_SAMPLES):
             # Again, which noise vector would be used is oblivious to the clients
             noise_vector0 = list(map(float, np.random.normal(0, sigma2, NB_CLASSES)))
             noise_vector1 = list(map(float, np.random.normal(0, sigma2, NB_CLASSES)))
-            
+
             # Convert them both to secure type
             sec_noise_vector0 = list(map(secfxp, noise_vector0))
             sec_noise_vector1 = list(map(secfxp, noise_vector1))
-        
+
         else:
             # The server does not generate noise vectors
             sec_noise_vector0 = list(map(secfxp, [None]*NB_CLASSES))
             sec_noise_vector1 = list(map(secfxp, [None]*NB_CLASSES))
-        
-        
+
+
         # Secret-share both noise vectors with every other party
         all_sec_noise_vector0 = mpc.input(sec_noise_vector0, senders=list(range(1,M)))
         all_sec_noise_vector1 = mpc.input(sec_noise_vector1, senders=list(range(1,M)))
 
         sec_chosen_noise_vectors = []
-        for client_id, selection_bit_for_client in enumerate(sec_selection_bits): 
+        for client_id, selection_bit_for_client in enumerate(sec_selection_bits):
             # If b is 0, we select noise0 from this client
-            # If b is 0, we select noise1 from this client 
+            # If b is 0, we select noise1 from this client
             # FIXME: Condition must be integral!
             #sec_chosen_noise_vector = mpc.if_else(selection_bit_for_client, all_sec_noise_vector1[client_id], all_sec_noise_vector0[client_id])
             #sec_chosen_noise_vectors.append(sec_chosen_noise_vector)
@@ -198,7 +213,7 @@ for sample_id in range(NB_SAMPLES):
         #print('chosen noise vectors:', mpc.run(mpc.output(sec_chosen_noise_vectors)))
 
 
-        # Aggregate the secure noise vectors from all parties 
+        # Aggregate the secure noise vectors from all parties
         total_sec_noise = vector_add_all(sec_chosen_noise_vectors)
         #print('total noise vector:', mpc.run(mpc.output(total_sec_noise)))
 
@@ -207,21 +222,21 @@ for sample_id in range(NB_SAMPLES):
 
         # Compute the secure argmax on this vector of aggregated noisy votes
         sec_argmax = argmax(total_sec_noisy_votes)
-    
+
         # Our label is the revealed (=recombined) argmax
         label = int(mpc.run(mpc.output(sec_argmax))) # TODO: Only server receives label??
-        
+
         if IS_SERVER:
             print(f'[*] Sample {sample_id}: {label}')
             LABELS[sample_id] = label
-        
+
         continue # To the next sample_id
 
 
 if IS_SERVER:
     # At the end of the computation, store these labels to a .npy file
     # Also store the computation time in the filename
-    
+
     #from datetime import datetime
     #ts = int(datetime.timestamp(datetime.now()))
     import time
