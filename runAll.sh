@@ -32,21 +32,21 @@ then
 
 fi
 
-#repeat_params=""
-#for ((i=1;i<=NB_CLIENTS+1;i++)); do
-#    repeat_params+="-P localhost "
-#done
+repeat_params=""
+for ((i=1;i<=NB_CLIENTS+1;i++)); do
+    repeat_params+="-P localhost "
+done
 
-#for ((client_id=1;client_id<=NB_CLIENTS;client_id++)); do
-#    python3 main.py $DATASET $repeat_params -I $client_id &
-#done
+for ((client_id=1;client_id<=NB_CLIENTS;client_id++)); do
+    python3 main.py $DATASET $repeat_params -I $client_id &
+done
 
 # important to run the server at LAST, because he's the one measuring the
 # computation time:
-#python3 main.py $DATASET $repeat_params -I 0
+python3 main.py $DATASET $repeat_params -I 0
 
-NB_PARTIES=$((NB_CLIENTS+1))
-python3 main.py $DATASET -M $NB_PARTIES   # handy flag "-M" to say "we are only running $NB_PARTIES localhost parties"
+#NB_PARTIES=$((NB_CLIENTS+1))
+#python3 main.py $DATASET -M $NB_PARTIES   # handy flag "-M" to say "we are only running $NB_PARTIES localhost parties"
 
 done
 
