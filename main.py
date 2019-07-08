@@ -93,7 +93,7 @@ print("="*50,'\n');
 
 last_time = time.time()
 elapsed = last_time - mpc.start_time
-csv_writer.writerow(['START','-',elapsed])
+csv_writer.writerow(['Sample ID','Label','Time elapsed'])
 
 # Iterate over all samples in the public dataset
 for sample_id in range(NB_SAMPLES):
