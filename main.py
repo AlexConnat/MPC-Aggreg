@@ -6,11 +6,8 @@ import sys
 
 from utils import vector_add_all, scalar_add_all, argmax
 
-
-# import csv
-# csv_file = open(f'SVHN_PRECISION.csv', mode='w')
-# csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-
+import time
+import csv
 
 if len(sys.argv) != 2:
     print(f'Usage: {sys.argv[0]} <mnist|svhn> [...]')
@@ -43,6 +40,14 @@ elif DATASET == 'svhn250':
     THRESHOLD = 300
     SIGMA1 = 200
     SIGMA2 = 40
+
+
+############### FOR BENCHMARKING PURPOSES ##################
+#NB_SAMPLES = 1
+csv_file = open(f'BENCHMARK/{DATASET}_{NB_SAMPLES}s_{len(mpc.parties)-1}c.csv', mode='w')
+csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+############################################################
+
 
 
 # Will hold the computed labels (or -1 if label is not defined)
@@ -86,7 +91,9 @@ mpc.run(mpc.start())   #### START THE MPC ROUNDS OF COMPUTATION ####
 print("="*50,'\n');
 ###############################################################################
 
-
+last_time = time.time()
+elapsed = last_time - mpc.start_time
+csv_writer.writerow(['START','-',elapsed])
 
 # Iterate over all samples in the public dataset
 for sample_id in range(NB_SAMPLES):
@@ -168,7 +175,7 @@ for sample_id in range(NB_SAMPLES):
     noisy_sec_max = sec_max + total_sec_noise
 
     # Reveal (=recombine the shares) of this noisy maximum
-    noisy_max = float(mpc.run(mpc.output(noisy_sec_max))) # TODO: only server receives?
+    noisy_max = float(mpc.run(mpc.output(noisy_sec_max)))
 
     # If it is lower than a threshold, the teachers are not confident enough
     # Then don't label this sample, and skip to the next one
@@ -176,6 +183,12 @@ for sample_id in range(NB_SAMPLES):
         if IS_SERVER:
             print(f'[*] Sample {sample_id}: NULL')
             LABELS[sample_id] = -1
+
+            elapsed = time.time() - last_time
+            # print('time elapsed:', elapsed)
+            csv_writer.writerow([sample_id, 'NULL', elapsed])
+            last_time = time.time()
+
         continue # Skip to the next sample_id in the for loop
 
     # If it is greater than the threshold (meaning that the teachers are
@@ -207,9 +220,10 @@ for sample_id in range(NB_SAMPLES):
             # If b is 0, we select noise0 from this client
             # If b is 0, we select noise1 from this client
             # FIXME: Condition must be integral!
-            #sec_chosen_noise_vector = mpc.if_else(selection_bit_for_client, all_sec_noise_vector1[client_id], all_sec_noise_vector0[client_id])
-            #sec_chosen_noise_vectors.append(sec_chosen_noise_vector)
-            sec_chosen_noise_vectors.append(all_sec_noise_vector1[client_id])
+            selection_bit_for_client.integral = True
+            sec_chosen_noise_vector = mpc.if_else(selection_bit_for_client, all_sec_noise_vector1[client_id], all_sec_noise_vector0[client_id])
+            sec_chosen_noise_vectors.append(sec_chosen_noise_vector)
+            #sec_chosen_noise_vectors.append(all_sec_noise_vector1[client_id])
 
         #print('chosen noise vectors:', mpc.run(mpc.output(sec_chosen_noise_vectors)))
 
@@ -225,25 +239,37 @@ for sample_id in range(NB_SAMPLES):
         sec_argmax = argmax(total_sec_noisy_votes)
 
         # Our label is the revealed (=recombined) argmax
-        label = int(mpc.run(mpc.output(sec_argmax))) # TODO: Only server receives label??
+        label = int(mpc.run(mpc.output(sec_argmax)))
 
         if IS_SERVER:
             print(f'[*] Sample {sample_id}: {label}')
             LABELS[sample_id] = label
 
+            elapsed = time.time() - last_time
+            # print('time elapsed:', elapsed)
+            csv_writer.writerow([sample_id, label, elapsed])
+            last_time = time.time()
+
         continue # To the next sample_id
 
 
 if IS_SERVER:
+    pass
     # At the end of the computation, store these labels to a .npy file
     # Also store the computation time in the filename
 
     #from datetime import datetime
     #ts = int(datetime.timestamp(datetime.now()))
-    import time
-    elapsed = time.time() - mpc.start_time
+    # import time
+    # elapsed = time.time() - mpc.start_time
+    #
+    # np.save(f'./RESULTS/labels_{DATASET}_{M-1}_clients_{elapsed}.npy', LABELS)
 
-    np.save(f'./RESULTS/labels_{DATASET}_{M-1}_clients_{elapsed}.npy', LABELS)
+
+
+############### FOR BENCHMARKING PURPOSES ##################
+csv_file.close()
+############################################################
 
 
 ###############################################################################

@@ -1,0 +1,12 @@
+You should have the results by the end of the day, but:
+*2 Clients:*   26s
+*3 Clients:*   33s
+*4 Clients:*   59s
+*5 Clients:*   68s
+*10 Clients:* 559s (9min)
+*15 Clients:* _[Running...]_ but c.a 30 seconds *PER* sample_id --> 320min = 5h20 total
+*20 Clients:* ???
+*50 Clients:* ???
+*83 Clients:* ???
+*125 Clients:* ???
+*250 Clients:* Probably forever
