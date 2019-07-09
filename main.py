@@ -43,7 +43,7 @@ elif DATASET == 'svhn250':
 
 
 ############### FOR BENCHMARKING PURPOSES ##################
-#NB_SAMPLES = 1
+NB_SAMPLES = 10
 csv_file = open(f'BENCHMARK/{DATASET}_{NB_SAMPLES}s_{len(mpc.parties)-1}c.csv', mode='w')
 csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 ############################################################
