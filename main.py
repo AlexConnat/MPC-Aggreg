@@ -254,9 +254,10 @@ for sample_id in range(NB_SAMPLES):
         sec_argmax = argmax(total_sec_noisy_votes)
 
         # Our label is the revealed (=recombined) argmax
-        label = int(mpc.run(mpc.output(sec_argmax)))
+        label = mpc.run(mpc.output(sec_argmax, receivers=[SERVER_ID]))
 
-        if IS_SERVER:
+        if label and IS_SERVER: # Should be a totology as the server is the ONLY one receiving the 'label' variable
+            label = int(label)
             print(f'[*] Sample {sample_id}: {label}')
             LABELS[sample_id] = label
 
