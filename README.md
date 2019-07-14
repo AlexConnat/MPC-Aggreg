@@ -32,7 +32,7 @@ For the purpose of the PoC, this code requires to be ran in this directory struc
 | **DATA/** <br>
 |  |  *mnist250/* <br>
 |  |  |  votes_client_i.npy <br>
-|  |  |  […] <br>
+|   |  |  […] <br>
 |  |  *svhn250/* <br>
 |  |  |  votes_client_i.npy <br>
 |  |  |  […] <br>
