@@ -24,24 +24,24 @@ For the purpose of the PoC, this code requires to be ran in this directory struc
 
 
 
-**MPC-Aggreg/**
-| .gitignore
-| main.py
-| utils.py
-|
-| **DATA/**
-|  |  *mnist250/*
-|  |  |  votes_client_i.npy
-|  |  |  [...]
-|  |  *svhn250/*
-|  |  |  votes_client_i.npy
-|  |  |  [...]
-|
-|  **BENCHMARK/**
-|  |  mnist250_640s_5c.csv
-|  |  [...]
-|
-|  runAll.sh
+**MPC-Aggreg/ **<br>
+| .gitignore <br>
+| main.py <br>
+| utils.py <br>
+| <br>
+| **DATA/** <br>
+|  |  *mnist250/* <br>
+|  |  |  votes_client_i.npy <br>
+|  |  |  […] <br>
+|  |  *svhn250/* <br>
+|  |  |  votes_client_i.npy <br>
+|  |  |  […] <br>
+| <br>
+|  **BENCHMARK/ **<br>
+|  |  mnist250_640s_5c.csv <br>
+|  |  […] <br>
+| <br>
+|  runAll.sh <br>
 
 
 
@@ -49,5 +49,5 @@ To generate these votes `votes_client_i.npy`, where `i` is the cliend ID, we wro
 
 
 
-The script `runAll.sh` was used to generate the CSV files used in the benchmarking of this PoC.
+The script `runAll.sh` was used to generate the CSV files used in the benchmarking of this PoC. <br>
 What it does, is running the code `main.py` with both datasets "mnist" and "svhn" and different number of clients ranging from 2 (3-party MPC) to 250 (251-party MPC).
