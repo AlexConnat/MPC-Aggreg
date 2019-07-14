@@ -1,6 +1,6 @@
 #!/bin/bash
 
-
+#for DATASET in "mnist" "svhn"; do
 for DATASET in "mnist"; do
 
 #for NB_CLIENTS in 2 3 4 5 10 15 20 25 30 35 40 50 60 70 80 100 125 200 250; do##for NB_CLIENTS in 10 15 25 50 83 125 250; do
@@ -52,4 +52,3 @@ python3 main.py $DATASET -M $NB_PARTIES   # handy flag "-M" to say "we are only 
 done
 
 done
-
