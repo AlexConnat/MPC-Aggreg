@@ -8,7 +8,7 @@ def vector_add_all(vectors):
 
     if len(vectors) == 1:
         return vectors[0]
-    
+
     v = mpc.vector_add(vectors[0], vectors[1])
 
     for i in range(2, len(vectors)):
@@ -18,12 +18,12 @@ def vector_add_all(vectors):
 
 
 def scalar_add_all(scalars):
-    
+
     if len(scalars) == 1:
         return scalars[0]
-    
+
     S = mpc.add(scalars[0], scalars[1])
-    
+
     for i in range(2, len(scalars)):
         S = mpc.add(S, scalars[i])
 
@@ -31,11 +31,10 @@ def scalar_add_all(scalars):
 
 
 def argmax(x):
-    a = type(x[0])(0)
+    argmax = type(x[0])(0)
     m = x[0]
     for i in range(1, len(x)):
-        b = m >= x[i]
-        a = b * (a - i) + i
-        m = b * (m - x[i]) + x[i]
-    return a
-
+        b = (m >= x[i])
+        argmax = mpc.if_else(b, argmax, i)
+        m = mpc.if_else(b, m, x[i])
+    return argmax
