@@ -37,11 +37,11 @@ For the purpose of the PoC, this code requires to be ran in this directory struc
 |  |  |  votes_client_i.npy <br>
 |  |  |  […] <br>
 | <br>
-|  **BENCHMARK/** <br>
+| **BENCHMARK/** <br>
 |  |  mnist250_640s_5c.csv <br>
 |  |  […] <br>
 | <br>
-|  runAll.sh <br>
+| runAll.sh <br>
 
 
 
