@@ -12,7 +12,7 @@ To install the `gmpy2` on Linux with `pip`, you must already have installed libg
 
 Then install the only 3 python requirements, numpy, gmpy2 and mpyc.
 
-`pip3 install numpy gmpy2 git+https://github.com/lschoe/mpyc`
+`pip3 install numpy gmpy2 git+git://github.com/lschoe/mpyc.git@4642a3cc65b62234491b6392b2f106fd8ae6457a`
 
 
 
