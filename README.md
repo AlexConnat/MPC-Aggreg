@@ -51,3 +51,33 @@ To generate these votes `votes_client_i.npy`, where `i` is the cliend ID, we wro
 
 The script `runAll.sh` was used to generate the CSV files used in the benchmarking of this PoC. <br>
 What it does, is running the code `main.py` with both datasets "mnist" and "svhn" and different number of clients ranging from 2 (3-party MPC) to 250 (251-party MPC).
+
+
+### How to run on an Amazon EC2 Ubuntu (18.04) instance:
+
+1) Log in to your instance via ssh
+`ssh -i key_file ubuntu@IP_ADDRESS_OF_INSTANCE`
+
+2) Update the sources lists for apt
+`sudo apt update`
+
+3) Install python and pip
+`sudo apt install python3 python3-pip`
+
+4) Install the required system libraries
+`sudo apt install libgmp-dev libmpfr-dev libmpc-dev`
+
+5) Install the required python libraries
+`pip3 install numpy gmpy2 git+https://github.com/lschoe/mpyc`
+
+6) Clone this repository
+`git clone https://github.com/AlexConnat/MPC-Aggreg`
+
+7) Run the runAll script
+`cd MPC-Aggreg; ./runAll.sh`
+
+8) You can tune the parameters in the runAll script. Results could be found in the `BENCHMARK` directory, under the format:
+`{name of dataset}_{number of clients}_{number of samples}_{timestamp}.csv`
+(e.g: `mnist250_8c_640s_1566203440`)
+
+9) These CSV contains at each line: the *sample ID*, the *label* it was assigned, and the *time* it took to do so. 
