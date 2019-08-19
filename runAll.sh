@@ -3,9 +3,9 @@
 #for DATASET in "mnist" "svhn"; do
 for DATASET in "mnist"; do
 
-#for NB_CLIENTS in 2 3 4 5 10 15 20 25 30 35 40 50 60 70 80 100 125 200 250; do##for NB_CLIENTS in 10 15 25 50 83 125 250; do
+#for NB_CLIENTS in 2 3 4 5 10 15 20 25 30 35 40 50 60 70 80 100 125 200 250; do
 #for NB_CLIENTS in 15 20 25 30 35 40 50 60 70 80 100 125 200 250; do
-for NB_CLIENTS in 16 17 18 19 20; do
+for NB_CLIENTS in 2 4 6 8 10; do
 
 if [ $DATASET == "mnist" ]
 then
@@ -47,7 +47,7 @@ fi
 #python3 main.py $DATASET $repeat_params -I 0
 
 NB_PARTIES=$((NB_CLIENTS+1))
-python3 main.py $DATASET -M $NB_PARTIES   # handy flag "-M" to say "we are only running $NB_PARTIES localhost parties"
+python3 SIMPLER_MAIN.py $DATASET -M $NB_PARTIES   # handy flag "-M" to say "we are only running $NB_PARTIES localhost parties"
 
 done
 
