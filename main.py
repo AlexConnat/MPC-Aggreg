@@ -34,7 +34,7 @@ def usage():
     print(f'Usage: {sys.argv[0]} <mnist|svhn> [nb_samples] [...]')
     sys.exit()
 
-if len(sys.argv) != 2:
+if len(sys.argv) < 2:
     usage()
 
 if sys.argv[1] == 'mnist':
@@ -44,9 +44,6 @@ elif sys.argv[1] == 'svhn':
 else:
     print(f'Error: Invalid dataset "{sys.argv[1]}".\n')
     usage()
-
-if len(sys.argv) > 2:
-    NB_SAMPLES = sys.argv[2]
 
 SERVER_ID = 0
 TOTAL_NB_TEACHERS = 250
@@ -67,6 +64,10 @@ elif DATASET == 'svhn250':
     THRESHOLD = 300
     SIGMA1 = 200
     SIGMA2 = 40
+
+# If specified, reduce the NB_SAMPLES to this one
+if len(sys.argv) > 2:
+    NB_SAMPLES = sys.argv[2]
 
 # This CSV file will hold the results, each label alongside the time it took to output these labels
 timestamp = int(time.time())
