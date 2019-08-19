@@ -67,7 +67,7 @@ elif DATASET == 'svhn250':
 
 # If specified, reduce the NB_SAMPLES to this one
 if len(sys.argv) > 2:
-    NB_SAMPLES = sys.argv[2]
+    NB_SAMPLES = int(sys.argv[2])
 
 # This CSV file will hold the results, each label alongside the time it took to output these labels
 timestamp = int(time.time())
