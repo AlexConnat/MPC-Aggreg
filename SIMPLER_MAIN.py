@@ -136,10 +136,10 @@ for sample_id in range(NB_SAMPLES):
         sec_noise_sigma1 = secfxp(noise_sigma1)
 
     else:
-        # The clients do not generate noise values
+        # Clients do not generate a noise value
         sec_noise_sigma1 = secfxp(None)
 
-    # Secret-share this noise values with every other party
+    # The server secret-shares this noise value with every other party
     # (take the 0th element because list only has 1 element: [x])
     sec_noise_sigma1 = mpc.input(sec_noise_sigma1, senders=[SERVER_ID])[0]
 
@@ -179,7 +179,7 @@ for sample_id in range(NB_SAMPLES):
             sec_noise_vector_sigma2 = list(map(secfxp, noise_vector_sigma2))
 
         else:
-            # The clients no not generate noise vectors
+            # Clients no not generate a noise vector
             sec_noise_vector_sigma2 = list(map(secfxp, [None]*NB_CLASSES))
 
 
