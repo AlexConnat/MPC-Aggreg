@@ -76,6 +76,7 @@ What it does, is running the code `main.py` with both datasets "mnist" and "svhn
 7) Run the runAll script <br>
 `cd MPC-Aggreg; ./runAll.sh`
 
-8) You can tune the parameters in the runAll script. Results could be found in the `BENCHMARK` directory, under the format `{name of dataset}_{number of clients}_{number of samples}_{timestamp}.csv` (e.g: `mnist250_8c_640s_1566203440`)
+8) You can tune the parameters in the runAll script. Results could be found in the `BENCHMARK` directory, under the format `{name of dataset}_{number of clients}_{number of samples}_{timestamp}.csv` <br>
+(e.g: `mnist250_8c_640s_1566203440`)
 
 9) These CSV contains at each line: the *sample ID*, the *label* it was assigned, and the *time* it took to do so. 
