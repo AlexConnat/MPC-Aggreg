@@ -93,8 +93,7 @@ if my_pid == SERVER_ID:
     print('You are the server!')
 
 
-# Each client loads the votes from its .npy file and compute
-# its local parameters
+# Each client loads the votes from its .npy file
 if not IS_SERVER:
     np_votes = np.load(f'DATA/{DATASET}/votes_client_{my_pid}.npy') # For this PoC the path is hardcoded here
 
