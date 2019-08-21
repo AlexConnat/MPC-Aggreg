@@ -58,20 +58,26 @@ What it does, is running the code `main.py` with both datasets "mnist" and "svhn
 1) Log in to your instance via ssh <br>
 `ssh -i key_file ubuntu@IP_ADDRESS_OF_INSTANCE`
 
-2) Update the sources lists for apt <br>
-`sudo apt update`
-
-3) Install python and pip <br>
-`sudo apt install python3 python3-pip`
-
-4) Install the required system libraries <br>
-`sudo apt install libgmp-dev libmpfr-dev libmpc-dev`
-
-5) Install the required python libraries <br>
-`pip3 install numpy gmpy2 git+https://github.com/lschoe/mpyc`
-
-6) Clone this repository <br>
+2) Clone this repository <br>
 `git clone https://github.com/AlexConnat/MPC-Aggreg`
+
+3) In this repository, run the setup script <br>
+`cd MPC-Aggreg; ./setup.sh`
+
+> This will:
+  
+  1) Update the sources lists for apt <br>
+  `sudo apt update`
+
+  2) Install python and pip <br>
+  `sudo apt install python3 python3-pip`
+
+  3) Install the required system libraries <br>
+  `sudo apt install libgmp-dev libmpfr-dev libmpc-dev`
+
+  4) Install the required python libraries <br>
+  `pip3 install numpy gmpy2 git+https://github.com/lschoe/mpyc`
+
 
 7) Run the runAll script <br>
 `cd MPC-Aggreg; ./runAll.sh`
