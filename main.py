@@ -166,18 +166,9 @@ for sample_id in range(NB_SAMPLES):
     all_sec_noises0 = mpc.input(sec_noise0, senders=list(range(1,M)))
     all_sec_noises1 = mpc.input(sec_noise1, senders=list(range(1,M)))
 
-
-    if IS_SERVER:
-        # Generate a selection bit for every client
-        selection_bits = list(map(int, np.random.randint(0,2,M-1)))
-        sec_selection_bits = list(map(secfxp, selection_bits))
-    else:
-        # Only the server draw these random selection bits
-        sec_selection_bits = list(map(secfxp, [None]*(M-1)))
-
-    # mpc.input() returns a list of lists of size len(senders). Here only 1 sender (the server)
-    # Hence we take the 0th element of: [[x,x,x]]  =>  [x,x,x] of length the number of clients
-    sec_selection_bits = mpc.input(sec_selection_bits, senders=[SERVER_ID])[0]
+    # Collectively (and securely) draw M-1 random bits (one for each client)
+    # These will be use to select which noise to use (0 or 1), for all clients
+    sec_selection_bits = mpc.random_bits(secfxp, M-1)
 
     sec_chosen_noises = []
     for client_id, selection_bit_for_client in enumerate(sec_selection_bits):

@@ -38,7 +38,7 @@ then
 fi
 
 NB_PARTIES=$((NB_CLIENTS+1))
-python3 RANDOM_BITS_MAIN.py $DATASET -M $NB_PARTIES   # handy flag "-M" to say "we are only running $NB_PARTIES localhost parties"
+python3 main.py $DATASET -M $NB_PARTIES   # handy flag "-M" to say "we are only running $NB_PARTIES localhost parties"
 
 echo ""
 echo ""
